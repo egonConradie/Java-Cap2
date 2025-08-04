@@ -6,71 +6,67 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 /**
- * PROGRAM DETAILS: Goal of the following code is to prompt a customer for input Print a menu and
- * prompt the customer for which menu options they would like to order Total of their order will be
- * added List of drivers information wil be read out of a file A driver will be selected based if
- * the user & driver location matches The customers invoice will be printed to a invoice text file
+ * PROGRAM DETAILS: Goal of the following code is to prompt a customer for input, print a menu and
+ * prompt the customer for which menu options they would like to order. Total of their order will be
+ * added. List of drivers information will be read out of a file. A driver will be selected based if
+ * the user & driver location matches. The customer's invoice will be printed to an invoice text
+ * file.
  */
 
 public class QuickFoods {
 
+  // Constants for file names used in the program
+  private static final String DRIVERS_FILE = "drivers.txt";
+  private static final String INVOICE_FILE = "invoice.txt";
+
   Scanner scanner = new Scanner(System.in);
 
+  /**
+   * The main method runs the QuickFoods ordering system. It allows restaurant owners to register
+   * their restaurant and customers to place orders. The program loops until the user chooses to
+   * exit.
+   */
   public static void main(String[] args) {
-    // DriverManager class - extract drivers && store and findDriver
+    // DriverManager class - extract drivers, store and findDriver
     DriverManager driverManager = new DriverManager();
-    String filePath = "drivers.txt";
-    // Load driver data from file
-    driverManager.loadDriversFromFile(filePath);
 
-    // Create Restaurant manager class(moved outside so not overwritten)
+    // Load driver data from file using constant
+    driverManager.loadDriversFromFile(DRIVERS_FILE);
+
+    // Create Restaurant manager instance
     RestaurantManager manager = new RestaurantManager();
 
-    // While: Takes owner/customer back to main menu after completion
+    // Main menu loop - takes owner/customer back to main menu after completion
     while (true) {
-      // Print MAIN-MENU
       Scanner scanner = new Scanner(System.in);
       int menuSelection = printMainMenu(scanner);
 
       switch (menuSelection) {
-        // RESTAURANT OWNER
-        case 1: {
-          // Use the existing method in RestaurantManager to collect restaurant info & register
+        case 1: { // RESTAURANT OWNER
+          // Collect restaurant info and register
           manager.collectRestaurantInfo();
-          // After registration, you can retrieve and print all restaurants if needed
+          // Print all registered restaurants if needed
           manager.printAllRestaurants();
           break;
         }
-        // CUSTOMER
-        case 2: {
+        case 2: { // CUSTOMER
           System.out.println("**** User login portal ****");
 
-          // Create a Customer object
           Customer customer = new Customer();
-          // Collect customer details
           customer.collectInput(scanner);
 
-          // Prints customer details using the toString() method
           System.out.println("Customer info:\n" + customer);
 
-          // Display available restaurants
           manager.restaurantList();
 
-          // Select restaurant
           System.out.println("Please Select a restaurant:");
           String selectedRestaurant = scanner.nextLine();
 
-          // Display the selected restaurant details
           manager.displayRestaurant(selectedRestaurant);
 
-
-
-          // Get location of the selected restaurant
           String restaurantLocation = manager.getRestaurantLocation(selectedRestaurant);
-          // find driver best for job
           String deliveryDriver = driverManager.findDriver(customer, restaurantLocation);
 
-          // Get the menu of the selected restaurant
           Restaurant chosenRestaurant = manager.getRestaurantMap().get(selectedRestaurant);
           if (chosenRestaurant == null) {
             System.out.println("Selected restaurant not found.");
@@ -78,36 +74,32 @@ public class QuickFoods {
           }
           HashMap<String, Double> menu = chosenRestaurant.getMenu();
 
-          // Create an Order object
           Order order = new Order();
 
-          // Start the ordering process using the selected restaurants menu
           order.takeOrder(menu);
 
-          // Print the order summary
           order.printOrder();
-          // instructions(!!!!!!!!!! ADD TO RECEIPT)
+
           customer.collectSpecialInstructions(scanner);
-          // Print the detailed receipt
+
           String receipt = order.getReceipt(chosenRestaurant.getMenu(), deliveryDriver, customer,
               chosenRestaurant);
 
           System.out.println(receipt);
 
-          try (BufferedWriter writer = new BufferedWriter(new FileWriter("invoice.txt"))) {
+          // Save receipt using file name constant
+          try (BufferedWriter writer = new BufferedWriter(new FileWriter(INVOICE_FILE))) {
             writer.write(receipt);
-            System.out.println("Receipt saved to invoice.txt successfully.");
+            System.out.println("Receipt saved to " + INVOICE_FILE + " successfully.");
           } catch (IOException e) {
             System.out.println("Error writing to file!");
           }
-          // instructions
 
           break;
         }
-        // EXIT PROGRAM
-        case 3: {
+        case 3: { // EXIT PROGRAM
           System.out.println("Exiting program...");
-          System.exit(0);// exit
+          System.exit(0);
           break;
         }
         default: {
@@ -118,19 +110,27 @@ public class QuickFoods {
     }
   }
 
-  // METHOD : Write invoice to file
+  /**
+   * Writes the invoice text to a file.
+   * 
+   * @param invoiceText The text of the invoice to be saved.
+   */
   public static void writeInvoiceToFile(String invoiceText) {
     try {
-      Formatter formatter = new Formatter("invoice.txt");
-      // %s format specifier -> inserts a string into the output
-      formatter.format("%s", invoiceText); // Write the invoice text into the file
+      Formatter formatter = new Formatter(INVOICE_FILE);
+      formatter.format("%s", invoiceText);
       formatter.close();
     } catch (Exception e) {
       System.out.println("Error writing to file: ");
     }
   }
 
-  // print Main menu
+  /**
+   * Prints the main menu options and reads the user selection.
+   * 
+   * @param scanner Scanner object for reading input
+   * @return the selected menu option
+   */
   public static int printMainMenu(Scanner scanner) {
     System.out.println("*********************************");
     System.out.println("** QuickFoods Ordering system: **");
@@ -144,6 +144,7 @@ public class QuickFoods {
   }
 
 }
+
 
 /**
  * REFERENCES:
