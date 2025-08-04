@@ -1,0 +1,18 @@
+==================
+RECEIPT
+======================
+Order number 1001
+Customer: Egon
+Email: egon@gmail.com
+Phone number: 1234567890
+Location: Stellenbosch
+You have ordered the following from Spur in Stellenbosch:
+2 x steak (R150,00)
+5 x coke (R15,00)
+Special instructions: Deliver unit 96
+Total: R375,00
+No driver found in the area. is nearest to the restaurant and so he will be delivering your
+order to you at:
+largo street 18
+Stellenbosch
+If you need to contact the restaurant, their number is 1234567890.
